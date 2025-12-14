@@ -1,0 +1,11 @@
+easyocr
+evaluate
+google-cloud-vision
+numpy
+openpyxl
+paddleocr
+pandas
+pillow
+pytesseract
+torch
+transformers
