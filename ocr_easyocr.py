@@ -24,9 +24,6 @@ except ImportError:
         flatten_ocr_text,
     )
 
-# EasyOCR can read common raster formats by path.
-# Your dataset collector in ocr_tesseract already restricts to:
-# (".jpg", ".jpeg", ".png", ".tif", ".tiff")
 SUPPORTED_PATH_SUFFIXES = {
     ".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".webp"
 }
@@ -35,14 +32,6 @@ EASYOCR_LANGS = ["en"]
 
 
 class EasyOcr:
-    """
-    EasyOCR implementation analogous to your Tesseract and PaddleOCR scripts.
-
-    - Reuses constants and helpers from ocr_tesseract:
-      PROJECT_ROOT, TEXT_SUFFIX, collect_image_paths, flatten_ocr_text
-    - Writes output files alongside source images with the same suffix.
-    - Uses the same dataset folder structure via collect_image_paths().
-    """
 
     def __init__(
         self,
@@ -123,7 +112,6 @@ class EasyOcr:
 
 
 def main() -> None:
-    # Keep default consistent with your Paddle script (CPU)
     ocr = EasyOcr(gpu=False)
     total_seconds = ocr.run_on_default_dataset()
 

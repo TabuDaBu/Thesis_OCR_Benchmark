@@ -1,18 +1,46 @@
-# OCR Thesis Project
+# Bachelorprojekt - OCR-Benchmark
 
-Projekt zur Ausführung und Auswertung verschiedener OCR-Pipelines auf einem gemeinsamen Datensatz.
+## Idee des Projekts
+Mehrere OCR-Engines auf einem lokalen Test-Datensatz laufen lassen und die Ergebnisse gegen Ground Truth per **CER**, **WER** und der **Verarbeitungszeit** auswerten.
 
-## Klassenübersicht
+## Ordnerstruktur
+- Datensatz liegt unter: `dataset_to_process/`
+- OCR-Ausgaben werden **neben den Bildern** als `*_ocred.txt` gespeichert (Suffix: `_ocred`)
+- Für die Auswertung werden Paare erwartet:
+  - OCR: `SAMPLE_ocred.txt`
+  - Ground Truth: `SAMPLE.gt.txt`
 
-- `gt_normalization`: Liest Ground-Truth-Textdateien aus `dataset_to_process`, entfernt Zeilenumbrüche und löst Silbentrennungen auf, um normalisierte Referenztexte zu erzeugen.  
-- `GoogleVisionOcr`: Kapselt die Google-Cloud-Vision-API, führt (Document-)Text-Detection auf Bildern aus und speichert den erkannten Text als `.txt` neben den Quelldateien.  
-- `DeepSeekOcr`: Lädt das lokale Modell `deepseek-ai/DeepSeek-OCR`, führt Inferenz auf Bildern durch und bereitet den erkannten Text im gleichen Format wie die anderen OCR-Skripte auf.  
-- `EasyOcr`: Verwendet EasyOCR für gängige Bildformate, extrahiert Text und schreibt die Ergebnisse als `_ocred.txt` passend zur bestehenden Tesseract-/Paddle-Logik.  
-- `PaddleOcr`: Nutzt `PaddleOCR`, extrahiert Text aus Bildern und speichert ihn mit gemeinsamer Helper-Logik aus `ocr_tesseract`.  
-- `wer`: Berechnet die Word Error Rate (WER) zwischen Ground-Truth-Dateien und OCR-Ergebnissen und schreibt die Resultate tabellarisch in eine Excel-Datei.  
-- `cer`: Berechnet die Character Error Rate (CER) mit der Hugging-Face-`evaluate`-Bibliothek und exportiert die Ergebnisse ebenfalls als Excel-Tabelle.
+## OCR-Skripte
+### Tesseract (`ocr_tesseract.py`)
+- Sprache: `DEFAULT_LANG = "eng"`
 
-## Installation
+### EasyOCR (`ocr_easyocr.py`)
+- Sprache: `langs=["en"]`, `gpu=False`
 
-```bash
-pip install -r requirements.txt
+### PaddleOCR (`ocr_paddle.py`)
+- Sprache: `lang="en"`, `device="cpu"`
+
+### Google Cloud Vision (`ocr_google.py`)
+- Authentifizierung erfordert Service-Account JSON 
+
+### DeepSeek-OCR (`ocr_deepseek.py`)
+- Model: `deepseek-ai/DeepSeek-OCR`
+- Prompt: `str = "<image>\nFree OCR."`
+
+**Hinweis:** Alle OCR-Skripte normalisieren Text (Zeilenumbrüche → Leerzeichen, doppelte Leerzeichen entfernen, Trennstriche beheben).
+
+## Optionale Ground Truth Normalisierung
+- Skript: `gt_normalization.py`
+- Erzeugt normalisierte `.gt.txt` Dateien im Ordner `dataset_to_process/ground_truth_normalized/` falls erforderlich
+
+## Auswertung
+### CER (`cer.py`)
+- Schreibt Ergebnis nach `dataset_to_process/cer_results.xlsx`
+
+### WER (`wer.py`)
+- Schreibt Ergebnis nach `dataset_to_process/wer_results.xlsx`
+
+Beide Skripte suchen automatisch passende OCR/GT-Paare im Zielordner.
+
+## Requirements
+Alle Abhängigkeiten in `requirements.txt`:

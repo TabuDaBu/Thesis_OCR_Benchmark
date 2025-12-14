@@ -9,7 +9,6 @@ NORMALIZED_DIR = PROJECT_ROOT / "dataset_to_process" / "ground_truth_normalized"
 
 
 class gt_normalization:
-    """Normalize ground-truth text files by removing newlines and fixing hyphenated line breaks."""
 
     def __init__(self, input_dir: Path = TEST_DATA_DIR, output_dir: Path = NORMALIZED_DIR) -> None:
         self.input_dir = input_dir
@@ -17,12 +16,6 @@ class gt_normalization:
 
     @staticmethod
     def flatten_text(text: str) -> str:
-        """
-        Make text single-line:
-        - fix hyphenated line breaks: 'in-\\nvestigate' -> 'investigate'
-        - remove all remaining newlines (turn them into spaces)
-        - collapse multiple spaces
-        """
         # Normalize line endings
         text = text.replace("\r\n", "\n").replace("\r", "\n")
 
@@ -50,13 +43,6 @@ class gt_normalization:
         return paths
 
     def normalize_file(self, source: Path) -> None:
-        """
-        Read a source .txt file, normalize its contents, and write it to the
-        corresponding path under the output directory with the same folder
-        structure, but with a '.gt' suffix before the extension.
-        Example: a006.txt -> a006.gt.txt
-        """
-        # Preserve relative folder structure
         relative = source.relative_to(self.input_dir)
         gt_name = f"{relative.stem}.gt{relative.suffix}"
         relative_with_suffix = relative.with_name(gt_name)
@@ -67,7 +53,6 @@ class gt_normalization:
         raw_text = source.read_text(encoding="utf-8")
         normalized = self.flatten_text(raw_text)
 
-        # One trailing newline at EOF
         target.write_text(normalized + "\n", encoding="utf-8")
 
     def run(self) -> None:

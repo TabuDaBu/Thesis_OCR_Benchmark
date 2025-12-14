@@ -7,15 +7,13 @@ from typing import Iterable, Optional
 from google.cloud import vision
 from google.oauth2 import service_account
 
-# Reuse helpers from your Tesseract script
+# Reuse helpers from  Tesseract script
 from ocr_tesseract import (
     PROJECT_ROOT,
     TEXT_SUFFIX,
     collect_image_paths,
     flatten_ocr_text,
 )
-
-# Same formats you use in your benchmark dataset
 SUPPORTED_PATH_SUFFIXES = {
     ".jpg",
     ".jpeg",
@@ -34,10 +32,6 @@ class GoogleVisionOcr:
     - document_text_detection() / text_detection()
 
     Auth options:
-    - If credentials is None:
-        * Uses Application Default Credentials (ADC)
-          => either gcloud auth application-default login
-          => or GOOGLE_APPLICATION_CREDENTIALS env var
     - If credentials_json is given:
         * Loads a service account key from that file explicitly.
     """
@@ -54,7 +48,6 @@ class GoogleVisionOcr:
             )
             self.client = vision.ImageAnnotatorClient(credentials=creds)
         else:
-            # Uses ADC (env var or gcloud) as in the official docs :contentReference[oaicite:1]{index=1}
             self.client = vision.ImageAnnotatorClient()
 
         self.use_document_text_detection = use_document_text_detection

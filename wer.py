@@ -21,15 +21,12 @@ class wer:
         ground_truth = ground_truth.strip()
         prediction = prediction.strip()
 
-        # Case 1: no text at all -> perfect match
         if not ground_truth and not prediction:
             return 0.0
 
-        # Case 2: one side empty, the other not -> worst case, clamp to 1.0
         if not ground_truth or not prediction:
             return 1.0
 
-        # Normal case: compute with HF metric
         result = cls._wer_metric.compute(
             predictions=[prediction],
             references=[ground_truth],
@@ -37,7 +34,6 @@ class wer:
 
         wer_value = float(result)
 
-        # Safety: ensure WER is within [0.0, 1.0]
         if wer_value < 0.0:
             return 0.0
         if wer_value > 1.0:
@@ -58,9 +54,7 @@ class wer:
         folder: Path | None = None,
         output_path: Path | None = None,
     ) -> Path:
-        """
-        Compute WER for every *_ocred.txt vs *.gt.txt pair and write Excel results.
-        """
+
         folder_path = Path(folder) if folder else self.dataset_dir
         destination = Path(output_path) if output_path else self.output_excel
 
@@ -94,7 +88,6 @@ class wer:
 
 
 def main_wer() -> None:
-    """Main entry point for running WER evaluation."""
     evaluator = wer()
     evaluator.evaluate_folder()
 

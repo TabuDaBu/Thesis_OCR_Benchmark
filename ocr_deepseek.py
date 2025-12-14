@@ -32,21 +32,6 @@ DEFAULT_MODEL_NAME = "deepseek-ai/DeepSeek-OCR"
 
 
 class DeepSeekOcr:
-    """
-    Local DeepSeek-OCR wrapper, aligned with your existing OCR APIs.
-
-    Uses the model's custom `infer` method (trust_remote_code=True).
-
-    IMPORTANT:
-    DeepSeek's infer() often prints OCR text to stdout instead of returning it.
-    We capture stdout and parse it.
-
-    TEXT NORMALIZATION CONTRACT (same as your Tesseract script):
-    - fix hyphenated line breaks
-    - remove all remaining newlines (turn them into spaces)
-    - collapse multiple spaces
-    - final output is ALWAYS single-line
-    """
 
     def __init__(
         self,
@@ -119,7 +104,6 @@ class DeepSeekOcr:
             **self._model_kwargs,
         )
 
-        # Be explicit to avoid FA auto-toggles
         if self.attn_implementation:
             model_load_kwargs["attn_implementation"] = self.attn_implementation
             model_load_kwargs["_attn_implementation"] = self.attn_implementation
@@ -170,13 +154,6 @@ class DeepSeekOcr:
         return ""
 
     def _extract_text_from_stdout(self, printed: str) -> str:
-        """
-        Parse DeepSeek's verbose stdout.
-        We filter debug lines and keep likely OCR text.
-
-        Then apply the SAME single-line normalization as Tesseract
-        via flatten_ocr_text().
-        """
         if not printed:
             return ""
 
@@ -213,7 +190,6 @@ class DeepSeekOcr:
             if not deduped or deduped[-1] != ln:
                 deduped.append(ln)
 
-        # ✅ Important: join with newlines then flatten using shared logic
         joined = "\n".join(deduped)
         return flatten_ocr_text(joined).strip()
 
@@ -229,8 +205,6 @@ class DeepSeekOcr:
         self._ensure_loaded()
         normalized_path = self._normalize_image_if_needed(image_path)
 
-        # Capture stdout so DeepSeek doesn't spam console,
-        # and so we can extract OCR text from it.
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             result = self._model.infer(  # type: ignore[attr-defined]
@@ -252,7 +226,7 @@ class DeepSeekOcr:
         if not text:
             text = self._extract_text_from_stdout(buf.getvalue())
 
-        # ✅ Final normalization (identical to Tesseract contract)
+        #  normalization
         text = flatten_ocr_text(text)
 
         return text.strip()

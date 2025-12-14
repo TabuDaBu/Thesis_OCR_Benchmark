@@ -12,7 +12,6 @@ PROJECT_ROOT = Path(__file__).parent
 
 @dataclass
 class cer:
-    """Utility to compute Character Error Rate (CER) for OCR outputs."""
 
     dataset_dir: Path = PROJECT_ROOT / "dataset_to_process"
     output_excel: Path = PROJECT_ROOT / "dataset_to_process/cer_results.xlsx"
@@ -20,19 +19,15 @@ class cer:
 
     @classmethod
     def calculate_cer(cls, ground_truth: str, prediction: str) -> float:
-        """Return the CER given two strings using Hugging Face evaluate library."""
         ground_truth = ground_truth.strip()
         prediction = prediction.strip()
 
-        # Fall 1: beide leer -> perfekte Übereinstimmung
         if not ground_truth and not prediction:
             return 0.0
 
-        # Fall 2: eine Seite leer, die andere nicht -> schlechtester Fall, aber max. 1.0
         if not ground_truth or not prediction:
             return 1.0
 
-        # Normalfall: mit HF-Metrik berechnen
         result = cls._cer_metric.compute(
             predictions=[prediction],
             references=[ground_truth],
@@ -40,7 +35,6 @@ class cer:
 
         cer_value = float(result)
 
-        # Sicherheit: CER in [0.0, 1.0] clampen
         if cer_value < 0.0:
             return 0.0
         if cer_value > 1.0:
@@ -60,7 +54,6 @@ class cer:
         folder: Path | None = None,
         output_path: Path | None = None,
     ) -> Path:
-        """Compute CER for every *_ocred.txt vs *.gt.txt pair and write Excel results."""
         folder_path = Path(folder) if folder else self.dataset_dir
         destination = Path(output_path) if output_path else self.output_excel
 
@@ -94,7 +87,6 @@ class cer:
 
 
 def main() -> None:
-    """Main entry point for running CER evaluation."""
     evaluator = cer()
     evaluator.evaluate_folder()
 
