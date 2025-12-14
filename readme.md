@@ -44,3 +44,7 @@ Beide Skripte suchen automatisch passende OCR/GT-Paare im Zielordner.
 
 ## Requirements
 Alle Abhängigkeiten in `requirements.txt`:
+
+## Alle Projektdateien als Link
+Aufgrund der GitHub-Uploadbegrenzung kann das gesamte Projekt inklusive der Ergebnisse unter folgendem Link heruntergeladen werden:
+https://aauklagenfurt-my.sharepoint.com/:u:/g/personal/dabuttazoni_edu_aau_at/IQBoY1omDVLjQr8EiiKT2ufsAWfNMNIHpEwg9N_hzmCMxLw?e=iMDZC6
